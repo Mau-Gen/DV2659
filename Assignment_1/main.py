@@ -1,4 +1,5 @@
 from itertools import combinations
+import json
 
 class Item():
     def __init__(self, n: str, p: int, s: int):
@@ -51,6 +52,40 @@ def utility_agent(budget, items):
     best_comb = max(combs, key=lambda comb: (comb.total_satisfaction, -comb.total_price))
 
     return print(f"This is the best possible combination for satisfaction:\n{best_comb} \nThe total satisfaction is: {best_comb.total_satisfaction}")
+
+def get_neighbors(graph, vertex):
+    row, col = vertex
+    neighbors = []
+
+    directions = [
+        (1,0), 
+        (-1,0), 
+        (0,1), 
+        (0,-1)
+    ]
+
+    for dr, dc in directions:
+        new_row = row + dr
+        new_col = col + dc
+
+        if 0 <= new_row < len(graph) and 0 <= new_col < len(graph[0]):
+            if graph[new_row][new_col] == 0:
+                neighbors.append((new_row, new_col))
+
+    return neighbors
+
+
+
+def load_maze(JSON_file):
+    pass
+
+def build_maze():
+    pass
+
+def bfs(graph, start, goal):
+
+def dfs(graph, start, goal):
+
 
 def main():
     items = [Item("Bread", 5, 6), Item("Milk", 4, 7), Item("Eggs", 6, 8), Item("Chocolate", 8, 9)]
