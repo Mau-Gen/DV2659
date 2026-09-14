@@ -76,21 +76,214 @@ def get_neighbors(graph, vertex):
 
 
 
-def load_maze(JSON_file):
-    pass
+def from_json(JSON_file):
 
-def build_maze():
-    pass
+    with open(f"{JSON_file}", "r") as file:
+        data = json.load(file)
 
-def bfs(graph, start, goal):
+    return data
+        
 
-def dfs(graph, start, goal):
+def to_json(item, name):
+    with open(f"{name}.json", "w") as file:
+        json.dump(item, file)
+
+
+def bfs(graph, start, goal, filename):
+
+    visited = {start}
+
+    queue = [start]
+
+    parent = {}
+
+    solved_maze = [row[:] for row in graph]
+
+    found = False
+
+    while queue:
+
+        curr = queue.pop(0)
+
+        if curr == goal:
+            found = True
+            break
+
+        neighbors = get_neighbors(graph, curr)
+
+        if neighbors:
+            for neighbor in neighbors:
+                if neighbor not in visited:
+                    if neighbor not in parent:
+                        parent[neighbor] = curr
+                    visited.add(neighbor)
+                    queue.append(neighbor)
+
+    
+    
+    if not found:
+            print("No path found!")
+            return
+    
+    path = []
+
+    curr = goal
+
+    while curr != start:
+        path.append(curr)
+        curr = parent[curr]
+
+    path.append(start)
+
+    path.reverse()
+
+    for row, col in path:
+
+        if (row, col) == start:
+            solved_maze[row][col] = "S"
+
+        elif (row, col) == goal:
+            solved_maze[row][col] = "G"
+
+        else:
+            solved_maze[row][col] = "*"
+
+    data = {
+            "start": start,
+            "goal": goal,
+            "steps": len(path) - 1,
+            "path": path,
+            "maze": solved_maze
+        }
+    
+    to_json(data, filename)
+    return
+
+    
+
+def dfs(graph, start, goal, filename):
+
+    visited = set()
+
+    stack = [start]
+
+    parent = {}
+
+    solved_maze = [row[:] for row in graph]
+
+    found = False
+
+    while stack:
+        curr = stack.pop()
+
+        if curr in visited:
+            continue
+
+        visited.add(curr)
+
+        if curr == goal:
+            found = True
+            break
+            
+        neighbors = get_neighbors(graph, curr)
+        if neighbors:
+            for neighbor in neighbors:
+                if neighbor not in visited:
+                    if neighbor not in parent:
+                        parent[neighbor] = curr
+                    stack.append(neighbor)
+
+    if not found:
+        print("No path found!")
+        return
+
+    path = []
+
+    curr = goal
+
+    while curr != start:
+        path.append(curr)
+        curr = parent[curr]
+
+    path.append(start)
+
+    path.reverse()
+
+    for row, col in path:
+
+        if (row, col) == start:
+            solved_maze[row][col] = "S"
+
+        elif (row, col) == goal:
+            solved_maze[row][col] = "G"
+
+        else:
+            solved_maze[row][col] = "*"
+
+    data = {
+            "start": start,
+            "goal": goal,
+            "steps": len(path) - 1,
+            "path": path,
+            "maze": solved_maze
+        }
+    
+    to_json(data, filename)
+    return
+
 
 
 def main():
     items = [Item("Bread", 5, 6), Item("Milk", 4, 7), Item("Eggs", 6, 8), Item("Chocolate", 8, 9)]
     reflex_agent(20, items)
     utility_agent(20, items)
+
+    data = from_json("graph.json")
+
+    maze = data["maze"]
+
+    s = tuple(data["start"])
+
+    g = tuple(data["end"])
+
+    bfs(maze, s, g, "bfs_solved")
+
+    data = from_json("bfs_solved.json")
+
+    bfs_solved = data["maze"]
+
+    bfs_steps = data["steps"]
+
+    bfs_string = ""
+
+    for i, _ in enumerate(bfs_solved):
+        for j, _ in enumerate(bfs_solved[i]):
+            bfs_string += str(bfs_solved[i][j])
+            bfs_string += " "
+        bfs_string += "\n"
+
+    print(bfs_string)
+    print(f"Total amount of steps taken with BFS: {bfs_steps}\n")
+
+    dfs(maze, s, g, "dfs_solved")
+
+    data = from_json("dfs_solved.json")
+
+    dfs_solved = data["maze"]
+
+    dfs_steps = data["steps"]
+
+    dfs_string = ""
+
+    for i, _ in enumerate(dfs_solved):
+        for j, _ in enumerate(dfs_solved[i]):
+            dfs_string += str(dfs_solved[i][j])
+            dfs_string += " "
+        dfs_string += "\n"
+
+    print(dfs_string)
+
+    print(f"Total amount of steps taken with DFS: {dfs_steps}\n")
 
 if __name__ == "__main__":
     main()

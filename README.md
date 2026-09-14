@@ -1,6 +1,6 @@
-### DV2659 Repository for Assignment 1 and 2
+# DV2659 Repository for Assignment 1 and 2
 
-# I will use git bash for this whole repo as to learn all commands necessary.
+### I will use git bash for this whole repo as to learn all commands necessary.
 
 ## Assignment 1
 
