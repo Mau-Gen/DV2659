@@ -99,9 +99,13 @@ def bfs(graph, start, goal, filename):
 
     solved_maze = [row[:] for row in graph]
 
+    max_frontier_size = 1
+
     found = False
 
     while queue:
+
+        max_frontier_size = max(max_frontier_size, len(queue))
 
         curr = queue.pop(0)
 
@@ -123,6 +127,12 @@ def bfs(graph, start, goal, filename):
     
     if not found:
             print("No path found!")
+            data = {
+                "start": start,
+                "goal": goal,
+                "maze": graph
+            }
+            to_json(data, filename)
             return
     
     path = []
@@ -153,7 +163,9 @@ def bfs(graph, start, goal, filename):
             "goal": goal,
             "steps": len(path) - 1,
             "path": path,
-            "maze": solved_maze
+            "maze": solved_maze,
+            "visited_amount": len(visited),
+            "max_frontier_size": max_frontier_size
         }
     
     to_json(data, filename)
@@ -167,6 +179,8 @@ def dfs(graph, start, goal, filename):
 
     stack = [start]
 
+    max_stack_depth = 1
+
     parent = {}
 
     solved_maze = [row[:] for row in graph]
@@ -174,12 +188,9 @@ def dfs(graph, start, goal, filename):
     found = False
 
     while stack:
+        max_stack_depth = max(max_stack_depth, len(stack))
+
         curr = stack.pop()
-
-        if curr in visited:
-            continue
-
-        visited.add(curr)
 
         if curr == goal:
             found = True
@@ -192,9 +203,16 @@ def dfs(graph, start, goal, filename):
                     if neighbor not in parent:
                         parent[neighbor] = curr
                     stack.append(neighbor)
+                    visited.add(neighbor)
 
     if not found:
         print("No path found!")
+        data = {
+            "start": start,
+            "goal": goal,
+            "maze": graph
+        }
+        to_json(data, filename)
         return
 
     path = []
@@ -225,7 +243,9 @@ def dfs(graph, start, goal, filename):
             "goal": goal,
             "steps": len(path) - 1,
             "path": path,
-            "maze": solved_maze
+            "maze": solved_maze,
+            "visited_amount": len(visited),
+            "max_stack_depth": max_stack_depth
         }
     
     to_json(data, filename)
